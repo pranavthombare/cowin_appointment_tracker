@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd 
 import datetime
+from datetime import timedelta
 from hashlib import sha256
 import streamlit as st
 
@@ -75,16 +76,18 @@ def weeklyAppointmentByDistrict(district_id,date):
     return appointments_df
 
 
+
 st.title('CoWIN Appointment Tracker')
 
-#transaction = genOTP('8488895597')
-#print(confirmOTP(int('886674'), transaction['code'][0]))
-DATE = datetime.date.today().strftime('%d-%m-%Y')
+st.write("Use the Sidebar to select state, district and the date for which you want to check the availibility of an appointment.")
+
+TODAY = datetime.date.today()
+DATE_LIST = [ TODAY + timedelta(days=x)  for x in range(0,7)]
+
 STATES = getStates()
-st.write(STATES)
 
 state_name = st.sidebar.selectbox('Select state',STATES['state_name'])
-st.write(f'{state_name} has following districts')
+#st.write(f'{state_name} has following districts')
 
 STATE_ID = STATES.loc[STATES['state_name'] == state_name, 'state_id'].item()
 DISTRICTS = getDistrict(STATE_ID)
@@ -92,7 +95,11 @@ DISTRICTS = getDistrict(STATE_ID)
 district_name = st.sidebar.selectbox('Select District',DISTRICTS['district_name'])
 DISTRICT_ID = DISTRICTS.loc[DISTRICTS['district_name'] == district_name, 'district_id'].item()
 
+DATE = st.sidebar.selectbox('Select date',DATE_LIST).strftime('%d-%m-%Y')
+
+
 #district_number = input('Enter Disctrict number: ')
 st.write(appointmentByDistrict(DISTRICT_ID,DATE))
-st.write(appointmentByPin('380015', DATE))
+
+#st.write(appointmentByPin(, DATE))
 
