@@ -5,6 +5,7 @@ import datetime
 from datetime import timedelta
 from hashlib import sha256
 import streamlit as st
+import os
 
 base_url = "https://cdn-api.co-vin.in/api"
 browser_header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36'}
@@ -99,7 +100,26 @@ DATE = st.sidebar.selectbox('Select date',DATE_LIST).strftime('%d-%m-%Y')
 
 
 #district_number = input('Enter Disctrict number: ')
-st.write(appointmentByDistrict(DISTRICT_ID,DATE))
+#st.write(appointmentByDistrict(DISTRICT_ID,DATE))
+
+#Filters
+result = appointmentByDistrict(DISTRICT_ID,DATE)
+VACCINE_FILTER = st.sidebar.selectbox("Select vaccine",result['vaccine'].unique() )
+
+#Final result
+FINAL = result[(result['vaccine'] == VACCINE_FILTER) & (result['available_capacity'] >= 1)]
+#st.write(FINAL)
+
+for row in FINAL.itertuples():
+    newline = '\n'
+    st.write("______________________________")
+    st.write(f"Doses available at {row.name}:") 
+    st.write(f"Dose 1 =>{row.available_capacity_dose1} \n\nDose 2=> {row.available_capacity_dose2}")
+    st.write(f"Address: {row.address}")
+    st.write(f"slots as follows")
+    st.write(row.slots)
+    st.write(f"Minimum age: {row.min_age_limit} and above")
+
 
 #st.write(appointmentByPin(, DATE))
 
